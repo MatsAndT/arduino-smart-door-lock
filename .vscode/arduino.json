@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328old",
+    "sketch": "nfc-user/get-nfc-card-info/get-nfc-card-info.ino",
+    "port": "/dev/ttyUSB1"
+}
