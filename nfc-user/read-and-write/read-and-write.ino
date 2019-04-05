@@ -92,11 +92,27 @@ void loop() {
     // that is: sector #1, covering block #4 up to and including block #7
     byte sector         = 1;
     byte blockAddr      = 4;
-    byte dataBlock[]    = {
-        0x01, 0x02, 0x03, 0x04, //  1,  2,   3,  4,
-        0x05, 0x06, 0x07, 0x08, //  5,  6,   7,  8,
-        0x09, 0x0a, 0xff, 0x0b, //  9, 10, 255, 11,
-        0x0c, 0x0d, 0x0e, 0x0f  // 12, 13, 14, 15
+    // Remove the number before use
+    // dataBlock1
+    byte dataBlock1[]    = {
+        0x01, 0x02, 0x03, 0x04, //  1,  2,  3,   4,
+        0x05, 0x06, 0x07, 0x08, //  5,  6,  7,   8,
+        0x09, 0x0a, 0xff, 0x0b, //  9,  10,  255, 11,
+        0x0c, 0x0d, 0x0e, 0x0f  // 12,  13,  14,  15
+    };
+    // dataBlock2
+    byte dataBlock2[]    = {
+        0x02, 0x5C, 0x17, 0x9A, //  2,   92,  23,  154,
+        0xD7, 0xE2, 0x4B, 0x1C, //  215, 126, 75,  28,
+        0x62, 0x0A, 0xFF, 0x01, //  98,  10,  255, 1,
+        0x78, 0xB7, 0x72, 0x15  //  120, 183, 114, 21
+    };
+    // dataBlock3
+    byte dataBlock3[]    = {
+        0x03, 0x33, 0xFE, 0xA5, //  3,   51,  254,  165,
+        0x34, 0x41, 0x41, 0x08, //  52,  65,  65,   8,
+        0x59, 0x0A, 0xFF, 0x0B, //  89,  10,  255,  11,
+        0x98, 0xAD, 0xD6, 0x5F  //  152, 173, 214,  95
     };
     byte trailerBlock   = 7;
     MFRC522::StatusCode status;
