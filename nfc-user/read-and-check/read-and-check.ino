@@ -37,62 +37,7 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance.
 
 MFRC522::MIFARE_Key key;
 
-/**
- * Initialize.
- */
-void setup() {
-    Serial.begin(115200); // Initialize serial communications with the PC
-    while (!Serial);    // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
-    SPI.begin();        // Init SPI bus
-    mfrc522.PCD_Init(); // Init MFRC522 card
-
-    // Prepare the key (used both as key A and as key B)
-    // using FFFFFFFFFFFFh which is the default at chip delivery from the factory
-    for (byte i = 0; i < 6; i++) {
-        key.keyByte[i] = 0xFF;
-    }
-
-    Serial.println(F("Scan a MIFARE Classic PICC to demonstrate read and write."));
-    Serial.print(F("Using key (for A and B):"));
-    dump_byte_array(key.keyByte, MFRC522::MF_KEY_SIZE);
-    Serial.println();
-
-    Serial.println(F("BEWARE: Data will be written to the PICC, in sector #1"));
-}
-
-/**
- * Main loop.
- */
-void loop() {
-    // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
-    if ( ! mfrc522.PICC_IsNewCardPresent())
-        return;
-
-    // Select one of the cards
-    if ( ! mfrc522.PICC_ReadCardSerial())
-        return;
-
-    // Show some details of the PICC (that is: the tag/card)
-    Serial.print(F("Card UID:"));
-    dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
-    Serial.println();
-    Serial.print(F("PICC type: "));
-    MFRC522::PICC_Type piccType = mfrc522.PICC_GetType(mfrc522.uid.sak);
-    Serial.println(mfrc522.PICC_GetTypeName(piccType));
-
-    // Check for compatibility
-    if (    piccType != MFRC522::PICC_TYPE_MIFARE_MINI
-        &&  piccType != MFRC522::PICC_TYPE_MIFARE_1K
-        &&  piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
-        Serial.println(F("This sample only works with MIFARE Classic cards."));
-        return;
-    }
-
-    // In this sample we use the second sector,
-    // that is: sector #1, covering block #4 up to and including block #7
-    byte sector         = 1;
-    byte blockAddr      = 4;
-    // dataBlock1 - For card one
+// dataBlock1 - For card one
     byte dataBlock1[]    = {
         0x01, 0x02, 0x03, 0x04, //  1,  2,  3,   4,
         0x05, 0x06, 0x07, 0x08, //  5,  6,  7,   8,
@@ -113,20 +58,70 @@ void loop() {
         0x59, 0x0A, 0xFF, 0x0B, //  89,  10,  255,  11,
         0x98, 0xAD, 0xD6, 0x5F  //  152, 173, 214,  95
     };
+
+/**
+ * Initialize.
+ */
+void setup() {
+    Serial.begin(115200); // Initialize serial communications with the PC
+    while (!Serial);    // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
+    SPI.begin();        // Init SPI bus
+    mfrc522.PCD_Init(); // Init MFRC522 card
+
+    // Prepare the key (used both as key A and as key B)
+    // using FFFFFFFFFFFFh which is the default at chip delivery from the factory
+    for (byte i = 0; i < 6; i++) {
+        key.keyByte[i] = 0xFF;
+    }
+
+}
+
+/**
+ * Main loop.
+ */
+void loop() {
+    // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
+    if ( ! mfrc522.PICC_IsNewCardPresent())
+        return;
+
+    // Select one of the cards
+    if ( ! mfrc522.PICC_ReadCardSerial())
+        return;
+
+    // Show some details of the PICC (that is: the tag/card)
+    //Serial.print(F("Card UID:"));
+    //dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
+    //Serial.println();
+    //Serial.print(F("PICC type: "));
+    //MFRC522::PICC_Type piccType = mfrc522.PICC_GetType(mfrc522.uid.sak);
+    //Serial.println(mfrc522.PICC_GetTypeName(piccType));
+
+    // Check for compatibility
+   /* if (    piccType != MFRC522::PICC_TYPE_MIFARE_MINI
+        &&  piccType != MFRC522::PICC_TYPE_MIFARE_1K
+        &&  piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
+        Serial.println(F("This sample only works with MIFARE Classic cards."));
+        return;
+    }*/
+
+    // In this sample we use the second sector,
+    // that is: sector #1, covering block #4 up to and including block #7
+    byte sector         = 1;
+    byte blockAddr      = 4;
+    
     byte trailerBlock   = 7;
     MFRC522::StatusCode status;
     byte buffer[18];
     byte size = sizeof(buffer);
-    bool match = false;
 
     // Authenticate using key A
-    Serial.println(F("Authenticating using key A..."));
+    /*Serial.println(F("Authenticating using key A..."));
     status = (MFRC522::StatusCode) mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, trailerBlock, &key, &(mfrc522.uid));
     if (status != MFRC522::STATUS_OK) {
         Serial.print(F("PCD_Authenticate() failed: "));
         Serial.println(mfrc522.GetStatusCodeName(status));
         return;
-    }
+    }*/
 
     // Show the whole sector as it currently is
     Serial.println(F("Current data in sector:"));
@@ -146,13 +141,13 @@ void loop() {
     Serial.println();
 
     // Authenticate using key B
-    Serial.println(F("Authenticating again using key B..."));
+    /*Serial.println(F("Authenticating again using key B..."));
     status = (MFRC522::StatusCode) mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_B, trailerBlock, &key, &(mfrc522.uid));
     if (status != MFRC522::STATUS_OK) {
         Serial.print(F("PCD_Authenticate() failed: "));
         Serial.println(mfrc522.GetStatusCodeName(status));
         return;
-    }
+    }*/
 
     
     // Check that data in block is what we have written
@@ -161,28 +156,18 @@ void loop() {
     
     byte count = 0;
     if (buffer[0] == 0x01) {
-        byte count = chack_bytes(buffer, dataBlock1);
+        count = chack_bytes(buffer, dataBlock1);
     } else if (buffer[0] == 0x02) {
-        
+        count = chack_bytes(buffer, dataBlock2);
     } else if (buffer[0] == 0x03) {
-
-    } else if (buffer[0] == 0x04) {
-
+        count = chack_bytes(buffer, dataBlock3);
     }
     
-    Serial.print(F("Number of bytes that match = ")); Serial.println(count);
     if (count == 16) {
         Serial.println(F("Success :-)"));
     } else {
         Serial.println(F("Failure, no match :-("));
-        Serial.println(F("  perhaps the write didn't work properly..."));
     }
-    Serial.println();
-
-    // Dump the sector data
-    Serial.println(F("Current data in sector:"));
-    mfrc522.PICC_DumpMifareClassicSectorToSerial(&(mfrc522.uid), &key, sector);
-    Serial.println();
 
     // Halt PICC
     mfrc522.PICC_HaltA();
@@ -206,8 +191,10 @@ byte chack_bytes(byte buffer[18], byte dataBlock[]) {
     for (byte i = 0; i < 16; i++) {
         // Compare buffer (= what we've read) with dataBlock (= what we've written)
         if (buffer[i] == dataBlock[i]){
+            Serial.print("buffer == dataBlock in: "); Serial.println(i);
             count++;
         } else {
+            Serial.print("buffer =/= dataBlock in: "); Serial.println(i);
             return count;
             break;
         }

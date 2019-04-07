@@ -1,6 +1,6 @@
 {
     "board": "arduino:avr:nano",
     "configuration": "cpu=atmega328old",
-    "sketch": "nfc-user/read-and-check/read-and-check.ino",
+    "sketch": "arduino-smart-door-lock.ino",
     "port": "/dev/ttyUSB0"
 }
